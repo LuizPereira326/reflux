@@ -1,0 +1,128 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Provider {
+  REDECANAIS
+  VIZER
+  TOPFLIX
+}
+
+enum Audio {
+  UNKNOWN
+  DUBBED
+  SUBTITLED
+  ORIGINAL
+}
+
+enum Quality {
+  UNKNOWN
+  SD
+  HD
+  FHD
+  UHD
+}
+
+model Movie {
+  id          Int           @id @unique
+  title       String
+  description String
+  thumbnail   String
+  poster      String
+  rating      Float
+  genres      MovieGenre[]
+  streams     MovieStream[]
+  releasedAt  DateTime
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([title])
+  @@map("movies")
+}
+
+model Series {
+  id          Int            @id @unique
+  title       String
+  description String
+  thumbnail   String
+  poster      String
+  rating      Float
+  genres      SeriesGenre[]
+  streams     SeriesStream[]
+  releasedAt  DateTime
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([title])
+  @@map("series")
+}
+
+model MovieGenre {
+  id        Int      @id @unique
+  name      String
+  movies    Movie[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([name])
+  @@map("movie_genres")
+}
+
+model SeriesGenre {
+  id        Int      @id @unique
+  name      String
+  series    Series[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([name])
+  @@map("series_genres")
+}
+
+model MovieStream {
+  id         String   @id @unique @default(cuid())
+  provider   Provider
+  refreshUrl String
+  accessUrl  String?
+  audio      Audio
+  quality    Quality
+  movie      Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  movieId    Int
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("movie_streams")
+}
+
+model SeriesStream {
+  id         String   @id @unique @default(cuid())
+  provider   Provider
+  refreshUrl String
+  accessUrl  String?
+  season     Int?
+  episode    Int?
+  audio      Audio
+  series     Series   @relation(fields: [seriesId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  seriesId   Int
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([season, episode])
+  @@map("series_streams")
+}
+model Channel {
+  id        String   @id @default(cuid())
+  name      String   // Ex: Globo, SBT, Record
+  streamUrl String   // Ex: https://strm.../playlist.m3u8
+  logo      String?  // URL do logo (opcional)
+  group     String?  // Ex: Aberta, Esportes
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

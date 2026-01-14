@@ -1,0 +1,2 @@
+*.redecanais.tv
+redecanais.tv
