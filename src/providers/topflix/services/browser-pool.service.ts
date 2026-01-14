@@ -1,15 +1,22 @@
 import { Injectable, Logger, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import * as puppeteer from 'puppeteer';
 
+const SCRAPERS_DISABLED = process.env.DISABLE_SCRAPERS === 'true';
+
 @Injectable()
 export class BrowserPoolService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(BrowserPoolService.name);
   private browser: puppeteer.Browser | null = null;
   private pagePool: puppeteer.Page[] = [];
-  private readonly MAX_PAGES = 5; // Limite de páginas simultâneas
+  private readonly MAX_PAGES = 5;
   private initPromise: Promise<void> | null = null;
 
   async onModuleInit() {
+    if (SCRAPERS_DISABLED) {
+      this.logger.warn('🚫 Puppeteer desativado por ENV (DISABLE_SCRAPERS=true)');
+      return;
+    }
+
     this.initPromise = this.initBrowser();
   }
 
@@ -26,11 +33,12 @@ export class BrowserPoolService implements OnModuleInit, OnModuleDestroy {
         args: [
           '--no-sandbox',
           '--disable-setuid-sandbox',
-          '--disable-dev-shm-usage', // Importante para Linux
+          '--disable-dev-shm-usage',
           '--disable-gpu',
           '--disable-software-rasterizer',
         ],
       });
+
       this.logger.log('✅ Browser pool inicializado');
     } catch (error) {
       this.logger.error('❌ Erro ao inicializar browser:', error);
@@ -39,7 +47,10 @@ export class BrowserPoolService implements OnModuleInit, OnModuleDestroy {
   }
 
   async getPage(): Promise<puppeteer.Page> {
-    // Espera o browser estar pronto
+    if (SCRAPERS_DISABLED) {
+      throw new Error('Scrapers desativados por ENV');
+    }
+
     if (this.initPromise) {
       await this.initPromise;
     }
@@ -48,12 +59,10 @@ export class BrowserPoolService implements OnModuleInit, OnModuleDestroy {
       throw new Error('Browser não inicializado');
     }
 
-    // Reutiliza página existente se disponível
     if (this.pagePool.length > 0) {
       return this.pagePool.pop()!;
     }
 
-    // Cria nova página se não atingiu o limite
     const pages = await this.browser.pages();
     if (pages.length < this.MAX_PAGES) {
       const page = await this.browser.newPage();
@@ -63,7 +72,6 @@ export class BrowserPoolService implements OnModuleInit, OnModuleDestroy {
       return page;
     }
 
-    // Aguarda uma página ficar disponível
     return new Promise((resolve) => {
       const checkInterval = setInterval(() => {
         if (this.pagePool.length > 0) {
@@ -76,16 +84,14 @@ export class BrowserPoolService implements OnModuleInit, OnModuleDestroy {
 
   async releasePage(page: puppeteer.Page) {
     try {
-      // Limpa a página para reutilização
       await page.goto('about:blank');
       await page.evaluate(() => {
         localStorage.clear();
         sessionStorage.clear();
       });
-      
+
       this.pagePool.push(page);
     } catch (error) {
-      // Se falhar ao limpar, fecha a página
       await page.close().catch(() => {});
     }
   }
