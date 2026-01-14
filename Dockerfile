@@ -16,10 +16,7 @@ COPY . .
 # 5. Build do projeto
 RUN npm run build
 
-# 6. DEBUG - Mostra a estrutura da pasta dist
-RUN echo "=== Conteúdo da pasta dist ===" && ls -la dist/ && echo "=== Fim do debug ==="
-
 EXPOSE 3000
 
-# 7. Executa migrations e inicia em modo produção
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main.js"]
+# 6. Executa migrations e inicia em modo produção (CAMINHO CORRETO!)
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/src/main.js"]
