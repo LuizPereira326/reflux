@@ -14,9 +14,9 @@ RUN npm install
 COPY . .
 
 # 5. Build do projeto
-RUN npm run build || echo "Build skipped"
+RUN npm run build
 
 EXPOSE 3000
 
-# 6. Executa migrations e inicia a aplicação
+# 6. Executa migrations e inicia em modo produção
 CMD ["sh", "-c", "npx prisma migrate deploy && npm run start:prod"]
