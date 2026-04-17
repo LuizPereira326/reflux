@@ -19,7 +19,7 @@ import { MetaModule } from '@/routes/meta/meta.module';
 import { StreamModule } from '@/routes/stream/stream.module';
 
 import { TopflixModule } from '@/providers/topflix/topflix.module';
-import { DoramasMP4Module } from './modules/doramasmp4/doramasmp4.module';
+import { DoramasMP4Module } from '@/modules/doramasmp4/doramasmp4.module';
 
 @Module({
   imports: [
