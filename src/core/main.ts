@@ -1,4 +1,4 @@
-import { AppModule } from '@/app.module';
+import { AppModule } from '@/core/app.module';
 import { EnvService } from '@/modules/env/env.service';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';

@@ -12,8 +12,8 @@ import { TvService } from "@/modules/tv/tv.service"
 import { RedeCanaisService } from "@/modules/rede-canais/rede-canais.service"
 import { DoramoreService } from "@/modules/doramore/doramore.service"
 
-import { hasCJK, translateEpisodeAsync } from "@/utils/episode-translator"
-import { getCachedTranslation } from "@/cache/translation.cache"
+import { hasCJK, translateEpisodeAsync } from "@/common/utils/episode-translator"
+import { getCachedTranslation } from "@/common/cache/translation.cache"
 import { DoramasMP4Service } from "@/modules/doramasmp4/doramasmp4.service"
 
 interface TmdbCacheEntry {
