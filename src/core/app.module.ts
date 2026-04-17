@@ -11,19 +11,14 @@ import { SearchModule } from '@/modules/search/search.module';
 import { StremioModule } from '@/modules/stremio/stremio.module';
 import { TvModule } from '@/modules/tv/tv.module';
 import { RedeCanaisModule } from '@/modules/rede-canais/rede-canais.module';
-import { DoramoreModule } from '@/modules/doramore/doramore.module';
 
 import { CatalogModule } from '@/routes/catalog/catalog.module';
 import { ManifestModule } from '@/routes/manifest/manifest.module';
 import { MetaModule } from '@/routes/meta/meta.module';
 import { StreamModule } from '@/routes/stream/stream.module';
 
-import { TopflixModule } from '@/providers/topflix/topflix.module';
-import { DoramasMP4Module } from '@/modules/doramasmp4/doramasmp4.module';
-
 @Module({
   imports: [
-    DoramasMP4Module,
     EnvModule,
     PrismaModule,
     GenresModule,
@@ -32,9 +27,6 @@ import { DoramasMP4Module } from '@/modules/doramasmp4/doramasmp4.module';
     TvModule,
 
     RedeCanaisModule,
-    DoramoreModule,
-
-    TopflixModule,
 
     CatalogModule,
     ManifestModule,
